@@ -2,10 +2,14 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <vector>
 #include "Projectile.h"
 
 class Player
 {
+private:
+
+	// Player Variables
 	int health;
 	int score;
 	bool died;
@@ -14,11 +18,13 @@ class Player
 	float MAX_FIRING_TIMER;
 	float movementSpeed;
 
-	sf::Vector2f projectileSpawnLocation;
-
 	sf::RectangleShape player;
 
-	Projectile projectile;
+	// Projectile Variables
+	Projectile* projectile;
+	sf::Vector2f projectileSpawnLocation;
+
+	std::vector<Projectile> projectiles;
 
 public:
 	Player();
@@ -26,9 +32,8 @@ public:
 	 
 	void setHealth(int health);
 	void setFiringTimer(float timer);
-	void setProjectileSpawnLocation(sf::Vector2f location);
+	void setProjectileSpawnLocation();
 
-	sf::Vector2f getProjectileSpawnLocation();
 	float getFiringTimer();
 	int getHealth();
 	int getScore();

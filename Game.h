@@ -13,6 +13,7 @@ using namespace std;
 class Game
 {
 	Player player;
+	//Projectile projectile;
 	vector<Enemy> Enemies;
 	vector<Boss> Bosses;
 

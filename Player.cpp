@@ -23,17 +23,11 @@ void Player::setFiringTimer(float timer)
 	this->firingTimer = timer;
 }
 
-void Player::setProjectileSpawnLocation(sf::Vector2f location)
+void Player::setProjectileSpawnLocation()
 {
-	this->projectileSpawnLocation = location;
+	this->projectileSpawnLocation = { this->player.getPosition().x, this->player.getPosition().y };
 }
-
 // Getter
-sf::Vector2f Player::getProjectileSpawnLocation()
-{
-	return this->projectileSpawnLocation;
-}
-
 float Player::getFiringTimer()
 {
 	return this->firingTimer;
@@ -91,7 +85,7 @@ void Player::playerMovement()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && this->firingTimer >= this->MAX_FIRING_TIMER) {
 		if (!this->fired) {
 			this->fired = true;
-			this->firingTimer = 0;
+			this->firingTimer = 0;			
 		}
 	}
 	else {
@@ -105,7 +99,10 @@ void Player::playerMovement()
 void Player::fireProjectile()
 {
 	if (this->fired) {
-		std::cout << "Fired: " << this->fired << std::endl;
+		setProjectileSpawnLocation();
+		this->projectile = new Projectile(this->projectileSpawnLocation);
+		
+		this->projectiles.push_back(*this->projectile);
 	}
 }
 
@@ -117,5 +114,18 @@ void Player::update()
 
 void Player::render(sf::RenderTarget* target)
 {
+	int outbound = target->getSize().x;
+
 	target->draw(this->player);
+
+	if (this->projectiles.size() > 0) {
+		for (int i = 0; i < this->projectiles.size(); i++) {
+			this->projectiles[i].update();
+			target->draw(this->projectiles[i].getProjectile());
+
+			if (this->projectiles[i].getLocation().x > outbound) {
+				this->projectiles.erase(projectiles.begin() + i);
+			}
+		}
+	}
 }
