@@ -65,6 +65,10 @@ void Game::update()
 {
 	this->pollEvents();
 	this->player.update();
+
+	if (this->player.getDied()) {
+		this->endGame = true;
+	}
 }
 
 void Game::render()

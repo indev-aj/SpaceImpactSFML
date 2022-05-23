@@ -18,8 +18,6 @@ private:
 	float MAX_FIRING_TIMER;
 	float movementSpeed;
 
-	
-
 	// Player Sprite
 	sf::Texture playerTexture;
 	sf::Sprite playerSprite;
@@ -32,6 +30,8 @@ private:
 
 	sf::Texture lifeTexture;
 	sf::Sprite lifeSprite;
+
+	std::vector<sf::Sprite> lifes;
 
 	float lifeXSize;
 	float lifeYSize;
@@ -60,11 +60,15 @@ public:
 	int getHealth();
 	int getScore();
 
+	bool getDied();
+
 	void initPlayer();
 	void initHUD(float top, float right, float bottom, float left);
 
 	void playerMovement();
 	void fireProjectile();
+
+	void updateHUD();
 
 	void update();
 	void render(sf::RenderTarget* target);
