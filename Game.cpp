@@ -5,6 +5,8 @@ void Game::initVariables()
 {
 	this->window = nullptr;
 	this->endGame = false;
+
+	
 }
 
 void Game::initWindow()
@@ -17,6 +19,7 @@ void Game::initWindow()
 
 Game::Game()
 {
+	this->initVariables();
 	this->initWindow();
 }
 
@@ -62,7 +65,8 @@ void Game::update()
 
 void Game::render()
 {
-	this->window->clear();
+	
+	this->window->clear(sf::Color(121, 174, 137));
 
 	this->player.render(this->window);
 

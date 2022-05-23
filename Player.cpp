@@ -4,6 +4,7 @@
 Player::Player()
 {
 	initPlayer();
+	initHUD();
 }
 
 // Destructor
@@ -24,9 +25,14 @@ void Player::setFiringTimer(float timer)
 }
 
 void Player::setProjectileSpawnLocation()
-{
-	this->projectileSpawnLocation = { this->player.getPosition().x, this->player.getPosition().y };
+{	float playerXMid = this->playerXSize;
+	float playerXPos = this->playerSprite.getPosition().x;
+
+	float playerYMid = (this->playerYSize / 2) - 2;
+	float playerYPos = this->playerSprite.getPosition().y;
+	this->projectileSpawnLocation = { playerXPos + playerXMid, playerYPos + playerYMid };
 }
+
 // Getter
 float Player::getFiringTimer()
 {
@@ -53,32 +59,53 @@ void Player::initPlayer()
 	this->MAX_FIRING_TIMER = 20.f;
 	this->died = false;
 	this->fired = false;
-	this->movementSpeed = 10.f;
+	this->movementSpeed = 7.f;
 	this->health = this->getHealth();
 	this->firingTimer = this->getFiringTimer();
 
-	this->player.setSize(sf::Vector2f(50.f, 50.f));
-	this->player.setFillColor(sf::Color::Blue);
-	this->player.setPosition(0.f, 0.f);
+	if (!this->playerTexture.loadFromFile("assets/player 64bit.png"))
+		std::cout << "Failed to load player texture!" << std::endl;
+	else
+		std::cout << "Successfully load player texture!" << std::endl;
+
+	this->playerSprite.setTexture(this->playerTexture);
+	this->playerYSize = this->playerSprite.getTexture()->getSize().y * this->playerSprite.getScale().y;
+	this->playerXSize = this->playerSprite.getTexture()->getSize().x * this->playerSprite.getScale().x;
+}
+
+void Player::initHUD()
+{
+	if (!this->lifeTexture.loadFromFile("assets/heart.png"))
+		std::cout << "Failed to load life texture!" << std::endl;
+	else
+		std::cout << "Successfully load life texture!" << std::endl;
+
+	this->lifeSprite.setTexture(this->lifeTexture);
+	this->lifeYSize = this->lifeSprite.getTexture()->getSize().y * this->lifeSprite.getScale().y;
+	this->lifeXSize = this->lifeSprite.getTexture()->getSize().x * this->lifeSprite.getScale().x;
+
+	this->hudBar.setSize(sf::Vector2f(800.f, 30.f));
+	this->hudBar.setPosition(0.f, 570.f);
+	this->hudBar.setFillColor(sf::Color(0, 0, 0, 150));
 }
 
 // Handle Keyboard Input
 void Player::playerMovement()
 {
 	// Move Vertically
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-		this->player.move(0.f, -this->movementSpeed);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && this->playerSprite.getPosition().y > topBound) {
+		this->playerSprite.move(0.f, -this->movementSpeed);
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		this->player.move(0.f, this->movementSpeed);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && this->playerSprite.getPosition().y < (bottomBound - this->playerYSize - this->hudBar.getSize().y)) {
+		this->playerSprite.move(0.f, this->movementSpeed);
 	}
 
 	// Move Horizontally
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		this->player.move(-this->movementSpeed, 0.f);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && this->playerSprite.getPosition().x > leftBound) {
+		this->playerSprite.move(-this->movementSpeed, 0.f);
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		this->player.move(this->movementSpeed, 0.f);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && this->playerSprite.getPosition().x < (rightBound - this->playerXSize)) {
+		this->playerSprite.move(this->movementSpeed, 0.f);
 	}
 
 	// Fire
@@ -101,6 +128,7 @@ void Player::fireProjectile()
 	if (this->fired) {
 		setProjectileSpawnLocation();
 		this->projectile = new Projectile(this->projectileSpawnLocation);
+		this->projectile->setSpeed(5);
 		
 		this->projectiles.push_back(*this->projectile);
 	}
@@ -114,16 +142,20 @@ void Player::update()
 
 void Player::render(sf::RenderTarget* target)
 {
-	int outbound = target->getSize().x;
+	this->rightBound = target->getSize().x;
+	this->leftBound = 0.f;
+	this->topBound = 0.f;
+	this->bottomBound = target->getSize().y;
 
-	target->draw(this->player);
+	target->draw(this->playerSprite);
+	target->draw(this->hudBar);
 
 	if (this->projectiles.size() > 0) {
 		for (int i = 0; i < this->projectiles.size(); i++) {
 			this->projectiles[i].update();
 			target->draw(this->projectiles[i].getProjectile());
 
-			if (this->projectiles[i].getLocation().x > outbound) {
+			if (this->projectiles[i].getLocation().x > this->rightBound) {
 				this->projectiles.erase(projectiles.begin() + i);
 			}
 		}

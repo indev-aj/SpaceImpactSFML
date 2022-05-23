@@ -21,6 +21,8 @@ public:
 	Projectile(sf::Vector2f location = {0,0});
 	virtual ~Projectile();
 
+	void setSpeed(int speed);
+	void setDamage(int damage);
 	sf::Vector2f setSpawnLocation(sf::Vector2f spawnLocation);
 
 	sf::Vector2f getLocation();

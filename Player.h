@@ -18,13 +18,35 @@ private:
 	float MAX_FIRING_TIMER;
 	float movementSpeed;
 
-	sf::RectangleShape player;
+	
+
+	// Player Sprite
+	sf::Texture playerTexture;
+	sf::Sprite playerSprite;
+
+	float playerXSize;
+	float playerYSize;
+
+	// Player HUDs
+	sf::RectangleShape hudBar;
+
+	sf::Texture lifeTexture;
+	sf::Sprite lifeSprite;
+
+	float lifeXSize;
+	float lifeYSize;
 
 	// Projectile Variables
 	Projectile* projectile;
 	sf::Vector2f projectileSpawnLocation;
 
 	std::vector<Projectile> projectiles;
+
+	// Window bounds
+	float leftBound;
+	float rightBound;
+	float topBound;
+	float bottomBound;
 
 public:
 	Player();
@@ -39,6 +61,8 @@ public:
 	int getScore();
 
 	void initPlayer();
+	void initHUD();
+	void initWindow(sf::RenderTarget* target);
 
 	void playerMovement();
 	void fireProjectile();

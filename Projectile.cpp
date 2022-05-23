@@ -11,6 +11,16 @@ Projectile::~Projectile()
 {
 }
 
+void Projectile::setSpeed(int speed = 10)
+{
+	this->speed = speed;
+}
+
+void Projectile::setDamage(int damage = 1)
+{
+	this->damage = damage;
+}
+
 void Projectile::initVariables()
 {
 	this->speed = 10;
@@ -21,7 +31,7 @@ void Projectile::initVariables()
 
 void Projectile::initProjectile(sf::Vector2f location)
 {
-	this->projectile.setSize(sf::Vector2f(10.f, 10.f));
+	this->projectile.setSize(sf::Vector2f(10.f, 5.f));
 	this->projectile.setFillColor(sf::Color::Red);
 	this->projectile.setPosition(this->setSpawnLocation(location));
 }
