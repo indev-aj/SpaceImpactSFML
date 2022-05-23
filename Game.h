@@ -26,6 +26,12 @@ class Game
 	string gameState;
 	bool endGame;
 
+	// Window bounds
+	float leftBound;
+	float rightBound;
+	float topBound;
+	float bottomBound;
+
 	void initVariables();
 	void initWindow();
 

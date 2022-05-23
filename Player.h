@@ -61,8 +61,7 @@ public:
 	int getScore();
 
 	void initPlayer();
-	void initHUD();
-	void initWindow(sf::RenderTarget* target);
+	void initHUD(float top, float right, float bottom, float left);
 
 	void playerMovement();
 	void fireProjectile();

@@ -4,7 +4,6 @@
 Player::Player()
 {
 	initPlayer();
-	initHUD();
 }
 
 // Destructor
@@ -70,11 +69,16 @@ void Player::initPlayer()
 
 	this->playerSprite.setTexture(this->playerTexture);
 	this->playerYSize = this->playerSprite.getTexture()->getSize().y * this->playerSprite.getScale().y;
-	this->playerXSize = this->playerSprite.getTexture()->getSize().x * this->playerSprite.getScale().x;
+	this->playerXSize = this->playerSprite.getTexture()->getSize().x * this->playerSprite.getScale().x;	
 }
 
-void Player::initHUD()
+void Player::initHUD(float top, float right, float bottom, float left)
 {
+	this->topBound = top;
+	this->rightBound = right;
+	this->bottomBound = bottom;
+	this->leftBound = left;
+
 	if (!this->lifeTexture.loadFromFile("assets/heart.png"))
 		std::cout << "Failed to load life texture!" << std::endl;
 	else
@@ -87,6 +91,8 @@ void Player::initHUD()
 	this->hudBar.setSize(sf::Vector2f(800.f, 30.f));
 	this->hudBar.setPosition(0.f, 570.f);
 	this->hudBar.setFillColor(sf::Color(0, 0, 0, 150));
+
+	this->playerSprite.setPosition(sf::Vector2f(0.f, (this->bottomBound / 2 - this->playerYSize)));
 }
 
 // Handle Keyboard Input
@@ -142,11 +148,6 @@ void Player::update()
 
 void Player::render(sf::RenderTarget* target)
 {
-	this->rightBound = target->getSize().x;
-	this->leftBound = 0.f;
-	this->topBound = 0.f;
-	this->bottomBound = target->getSize().y;
-
 	target->draw(this->playerSprite);
 	target->draw(this->hudBar);
 

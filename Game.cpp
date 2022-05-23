@@ -5,8 +5,6 @@ void Game::initVariables()
 {
 	this->window = nullptr;
 	this->endGame = false;
-
-	
 }
 
 void Game::initWindow()
@@ -15,12 +13,18 @@ void Game::initWindow()
 	this->videoMode.width = 800;
 	this->window = new sf::RenderWindow(this->videoMode, "Space Impact");
 	this->window->setFramerateLimit(60);
+
+	this->rightBound = this->window->getSize().x;
+	this->leftBound = 0.f;
+	this->topBound = 0.f;
+	this->bottomBound = this->window->getSize().y;
 }
 
 Game::Game()
 {
 	this->initVariables();
 	this->initWindow();
+	this->player.initHUD(this->topBound, this->rightBound, this->bottomBound, this->leftBound);
 }
 
 Game::~Game()
