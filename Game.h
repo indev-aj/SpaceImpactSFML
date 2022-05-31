@@ -14,6 +14,7 @@ class Game
 {
 	Player player;
 	//Projectile projectile;
+	Enemy enemy;
 	vector<Enemy> Enemies;
 	vector<Boss> Bosses;
 

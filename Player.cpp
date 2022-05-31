@@ -156,14 +156,6 @@ void Player::fireProjectile()
 	}
 }
 
-void Player::updateHUD()
-{
-	// Update health hud
-	for (int i = 0; i < this->health; i++) {
-
-	}
-}
-
 void Player::update()
 {
 	if (this->health > 0) {

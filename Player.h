@@ -68,8 +68,6 @@ public:
 	void playerMovement();
 	void fireProjectile();
 
-	void updateHUD();
-
 	void update();
 	void render(sf::RenderTarget* target);
 };
