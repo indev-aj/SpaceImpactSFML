@@ -65,6 +65,7 @@ void Player::initPlayer()
 	this->MAX_FIRING_TIMER = 20.f;
 	this->died = false;
 	this->fired = false;
+	this->bossSpawned = false;
 	this->movementSpeed = 7.f;
 	this->health = this->getHealth();
 	this->firingTimer = this->getFiringTimer();
@@ -156,17 +157,33 @@ void Player::playerMovement()
 	}
 
 	// Enemy Spawn Timing
-	if (this->spawnTimer >= this->MAX_SPAWN_TIMER) {
-		if (!this->spawned) {
-			this->spawned = true;
-			this->spawnTimer = 0;
+	if (!this->bossSpawned) {
+		if (this->spawnTimer >= this->MAX_SPAWN_TIMER) {
+			if (!this->spawned) {
+				this->spawned = true;
+				this->spawnTimer = 0;
+			}
+		}
+		else {
+			this->spawned = false;
+
+			if (this->spawnTimer < this->MAX_SPAWN_TIMER)
+				this->spawnTimer += 1;
 		}
 	}
 	else {
-		this->spawned = false;
+		if (this->movingTimer >= this->MAX_MOVING_TIMER) {
+			if (!this->changeDirection) {
+				this->changeDirection = true;
+				this->movingTimer = 0;
+			}
+		}
+		else {
+			this->changeDirection = false;
 
-		if (this->spawnTimer < this->MAX_SPAWN_TIMER)
-			this->spawnTimer += 1;
+			if (this->movingTimer < this->MAX_MOVING_TIMER)
+				this->movingTimer += 1;
+		}
 	}
 }
 
@@ -200,6 +217,26 @@ void Player::spawnEnemy()
 	}
 }
 
+void Player::initBoss()
+{
+	this->MAX_MOVING_TIMER = 100;
+	this->movingTimer = 0;
+	this->bossSpawned = true;
+}
+
+void Player::spawnBoss()
+{
+	if (this->bossSpawned && !once) {
+		this->boss = new Boss();
+		this->bossSpawnLocation.x = this->rightBound + this->boss->getXSize();
+		this->bossSpawnLocation.y = this->bottomBound / 2 - this->boss->getYSize();
+
+		this->boss->setSpawnLocation(this->bossSpawnLocation);
+
+		once = true;
+	}
+}
+
 void Player::bulletOnHit()
 {
 	if (this->projectiles.size() > 0 && this->enemies.size() > 0) {
@@ -216,10 +253,33 @@ void Player::bulletOnHit()
 					sf::FloatRect textBound = scoreText.getGlobalBounds();
 
 					this->scoreText.setPosition(this->rightBound - textBound.width - 10, 3.f);
+
+					if (this->score >= 1) {
+						initBoss();
+						std::cout << "Scored more than 10" << std::endl;
+					}
 				}
 			}
 		}
 	}
+	else if (this->projectiles.size() > 0 && bossSpawned) {
+		for (int i = 0; i < this->projectiles.size(); i++) {
+			if (projectiles[i].getProjectile().getGlobalBounds().intersects(this->boss->getBoss().getGlobalBounds())) {
+				int currentHealth = this->boss->getHealth();
+				currentHealth--;
+
+				this->boss->setHealth(currentHealth);
+				this->projectiles.erase(projectiles.begin() + i);
+
+				if (this->boss->getHealth() <= 0) {
+					delete this->boss;
+					this->gameWon = true;
+				}
+					//std::cout << "Game won!" << std::endl;
+			}
+		}
+	}
+
 }
 
 void Player::enemyOnHit()
@@ -236,14 +296,47 @@ void Player::enemyOnHit()
 	}
 }
 
+void Player::bossUpdate()
+{
+	if (this->boss->getCurrentPosition().x > this->rightBound - this->boss->getXSize() - 100) {
+		this->boss->moveIn();
+		if (this->boss->getCurrentPosition().x <= this->rightBound - this->boss->getXSize() - 100)
+			this->hasEntered = true;
+	}
+
+	if (hasEntered) {
+		if (this->changeDirection) {
+			this->moveCount++;
+
+			if (this->dir == "up" && this->moveCount > 1) {
+				this->dir = "down";
+				this->moveCount = 0;
+			}
+			else if (this->dir == "down" && this->moveCount > 1) {
+				this->dir = "up";
+				this->moveCount = 0;
+			}
+		}
+
+		if (this->dir == "up")
+			this->boss->moveUp();
+		else if (this->dir == "down")
+			this->boss->moveDown();
+	}
+}
+
 void Player::update()
 {
 	if (this->health > 0) {
 		playerMovement();
 		fireProjectile();
+
 		spawnEnemy();
+
 		bulletOnHit();
 		enemyOnHit();
+
+		spawnBoss();
 	}
 	else {
 		this->died = true;
@@ -284,5 +377,10 @@ void Player::render(sf::RenderTarget* target)
 				this->enemies.erase(enemies.begin() + i);
 			}
 		}
+	}
+
+	if (this->bossSpawned && !this->gameWon) {
+		target->draw(this->boss->getBoss());
+		bossUpdate();
 	}
 }

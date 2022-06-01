@@ -5,6 +5,7 @@
 #include <vector>
 #include "Projectile.h"
 #include "Enemy.h"
+#include "Boss.h"
 
 class Player
 {
@@ -18,6 +19,8 @@ private:
 	float firingTimer;
 	float MAX_FIRING_TIMER;
 	float movementSpeed;
+
+	bool gameWon = false;
 
 	// Player Sprite
 	sf::Texture playerTexture;
@@ -55,6 +58,20 @@ private:
 	int MAX_SPAWN_TIMER;
 	bool spawned;
 
+	// Boss Variables
+	Boss* boss;
+	sf::Vector2f bossSpawnLocation;
+
+	int movingTimer;
+	int MAX_MOVING_TIMER;
+	bool bossSpawned;
+	bool once = false;
+	bool hasEntered = false;
+	bool changeDirection = false;
+
+	std::string dir = "up";
+	int moveCount = 0;
+
 	// Window bounds
 	float leftBound;
 	float rightBound;
@@ -84,9 +101,13 @@ public:
 	void initEnemy();
 	void spawnEnemy();
 
+	void initBoss();
+	void spawnBoss();
+
 	void bulletOnHit();
 	void enemyOnHit();
 
+	void bossUpdate();
 	void update();
 	void render(sf::RenderTarget* target);
 };
