@@ -15,7 +15,6 @@ private:
 	int score;
 	bool died;
 	bool fired;
-	bool bulletOnHit;
 	float firingTimer;
 	float MAX_FIRING_TIMER;
 	float movementSpeed;
@@ -82,6 +81,7 @@ public:
 	void spawnEnemy();
 
 	void bulletOnHit();
+	void enemyOnHit();
 
 	void update();
 	void render(sf::RenderTarget* target);

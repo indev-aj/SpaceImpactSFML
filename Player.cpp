@@ -65,7 +65,6 @@ void Player::initPlayer()
 	this->MAX_FIRING_TIMER = 20.f;
 	this->died = false;
 	this->fired = false;
-	this->bulletOnHit = false;
 	this->movementSpeed = 7.f;
 	this->health = this->getHealth();
 	this->firingTimer = this->getFiringTimer();
@@ -190,12 +189,26 @@ void Player::spawnEnemy()
 void Player::bulletOnHit()
 {
 	if (this->projectiles.size() > 0 && this->enemies.size() > 0) {
-		for (auto& bullet : projectiles) {
-			for (auto& enemy : enemies) {
-				if (bullet.getProjectile().getGlobalBounds().intersects(enemy.getEnemy().getGlobalBounds())) {
-					// std::cout << "Bullet Hit!" << std::endl;
-
+		for (int i = 0; i < this->projectiles.size(); i++) {
+			for (int j = 0; j < this->enemies.size(); j++) {
+				if (projectiles[i].getProjectile().getGlobalBounds().intersects(enemies[j].getEnemy().getGlobalBounds())) {
+					this->projectiles.erase(projectiles.begin() + i);
+					this->enemies.erase(enemies.begin() + j);
 				}
+			}
+		}
+	}
+}
+
+void Player::enemyOnHit()
+{
+	if (this->enemies.size() > 0) {
+		for (int i = 0; i < this->enemies.size(); i++) {
+			if (enemies[i].getEnemy().getGlobalBounds().intersects(this->playerSprite.getGlobalBounds())) {
+				std::cout << enemies[i].getDamage() << " damage taken!" << std::endl;
+				this->health -= 1;
+				this->lifes.pop_back();
+				this->enemies.erase(enemies.begin() + i);
 			}
 		}
 	}
@@ -208,6 +221,7 @@ void Player::update()
 		fireProjectile();
 		spawnEnemy();
 		bulletOnHit();
+		enemyOnHit();
 	}
 	else {
 		this->died = true;
