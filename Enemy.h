@@ -7,10 +7,8 @@ class Enemy
 private:
 	int health;
 	int damage;
-	int movementSpeed;
-	float spawnTimer;
-	float MAX_SPAWN_TIMER;
-	bool spawned;
+	int speed;
+
 	sf::Vector2f spawnLocation;
 
 	sf::Texture enemyTexture;
@@ -19,32 +17,26 @@ private:
 	float enemyXSize;
 	float enemyYSize;
 
-	int enemyCount;
-	int maxEnemyCount;
-	std::vector<sf::Sprite> enemies;
-
-	// Window bounds
-	float leftBound;
-	float rightBound;
-	float topBound;
-	float bottomBound;
-
 public:
 	Enemy();
 	~Enemy();
 
-	void setSpawnTimer(float timer);
 	void setHealth(int health);
 	void setDamage(int damage);
+	void setSpeed(int speed);
+	void setSpawnLocation(sf::Vector2f spawnLocation);
 
-	float getSpawnTimer();
+	float getXSize();
+	float getYSize();
+
 	int getDamage();
 	int getHealth();
+	int getSpeed();
 
-	void enemyMovement();
-	void spawnEnemy();
+	sf::Vector2f getLocation();
+	sf::Sprite getEnemy();
+
 	void initEnemy();
 
 	void update();
-	void render(sf::RenderTarget* target);
 };

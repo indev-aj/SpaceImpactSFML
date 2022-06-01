@@ -65,7 +65,7 @@ void Game::update()
 {
 	this->pollEvents();
 	this->player.update();
-	this->enemy.update();
+	// this->enemy.update();
 
 	if (this->player.getDied()) {
 		this->endGame = true;
@@ -74,11 +74,9 @@ void Game::update()
 
 void Game::render()
 {
-	
 	this->window->clear(sf::Color(121, 174, 137));
 
 	this->player.render(this->window);
-	this->enemy.render(this->window);
 
 	this->window->display();
 }

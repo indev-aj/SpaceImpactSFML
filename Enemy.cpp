@@ -2,20 +2,12 @@
 
 Enemy::Enemy()
 {
-	this->topBound = 0.f;
-	this->rightBound = 800.f;
-	this->bottomBound = 600.f;
-	this->leftBound = 0.f;
 	initEnemy();
 }
 
 Enemy::~Enemy()
 {
-}
-
-void Enemy::setSpawnTimer(float timer)
-{
-	this->spawnTimer = timer;
+	
 }
 
 void Enemy::setHealth(int health)
@@ -28,9 +20,9 @@ void Enemy::setDamage(int damage)
 	this->damage = damage;
 }
 
-float Enemy::getSpawnTimer()
+void Enemy::setSpeed(int speed)
 {
-	return this->spawnTimer;
+	this->speed = speed;
 }
 
 int Enemy::getDamage()
@@ -43,51 +35,43 @@ int Enemy::getHealth()
 	return this->health;
 }
 
-void Enemy::enemyMovement()
+int Enemy::getSpeed()
 {
-	if (this->spawnTimer >= this->MAX_SPAWN_TIMER) {
-		if (!this->spawned) {
-			this->spawned = true;
-			this->spawnTimer = 0;
-		}
-	}
-	else {
-		this->spawned = false;
-
-		if (this->spawnTimer < this->MAX_SPAWN_TIMER)
-			this->spawnTimer += 1;
-	}
-
-	for (int i = 0; i < enemies.size(); i++) {
-		enemies[i].move(-this->movementSpeed, 0.f);
-	}
+	return this->speed;
 }
 
-void Enemy::spawnEnemy()
+void Enemy::setSpawnLocation(sf::Vector2f spawnLocation)
 {
-	if (this->enemyCount < maxEnemyCount) {
-		this->spawnLocation.x = this->rightBound + enemyXSize;
-		this->spawnLocation.y = rand() % int(this->bottomBound - enemyYSize) + 30;
-		enemySprite.setPosition(this->spawnLocation);
-		
-		if (this->spawned) {
-			enemies.push_back(enemySprite);
-			this->enemyCount++;
-		}
-	}
+	this->spawnLocation = spawnLocation;
+	this->enemySprite.setPosition(this->spawnLocation);
+}
+
+float Enemy::getXSize()
+{
+	return this->enemySprite.getTexture()->getSize().x;
+}
+
+float Enemy::getYSize()
+{
+	return this->enemySprite.getTexture()->getSize().y;
+}
+
+sf::Vector2f Enemy::getLocation()
+{
+	return this->enemySprite.getPosition();
+}
+
+sf::Sprite Enemy::getEnemy()
+{
+	return this->enemySprite;
 }
 
 void Enemy::initEnemy()
 {
 	this->setHealth(1);
 	this->setDamage(1);
-	this->setSpawnTimer(0.f);
 
-	this->MAX_SPAWN_TIMER = 125.f;
-	this->maxEnemyCount = 10;
-	this->movementSpeed = 5.f;
-	this->maxEnemyCount = 10;
-	this->spawned = false;
+	this->speed = 5.f;
 
 	if (!this->enemyTexture.loadFromFile("assets/enemy.png"))
 		std::cout << "Failed to load enemy texture!" << std::endl;
@@ -101,17 +85,5 @@ void Enemy::initEnemy()
 
 void Enemy::update()
 {
-	spawnEnemy();
-	enemyMovement();
-}
-
-void Enemy::render(sf::RenderTarget* target)
-{
-	for (int i = 0; i < enemies.size(); i++) {
-		target->draw(this->enemies[i]);
-
-		if (this->enemies[i].getPosition().x < (this->leftBound - enemyXSize)) {
-			this->enemies.erase(enemies.begin() + i);
-		}
-	}
+	this->enemySprite.move(-this->speed, 0.f);
 }

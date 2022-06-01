@@ -4,6 +4,7 @@
 Player::Player()
 {
 	initPlayer();
+	initEnemy();
 }
 
 // Destructor
@@ -64,6 +65,7 @@ void Player::initPlayer()
 	this->MAX_FIRING_TIMER = 20.f;
 	this->died = false;
 	this->fired = false;
+	this->bulletOnHit = false;
 	this->movementSpeed = 7.f;
 	this->health = this->getHealth();
 	this->firingTimer = this->getFiringTimer();
@@ -139,6 +141,20 @@ void Player::playerMovement()
 		if (this->firingTimer < this->MAX_FIRING_TIMER)
 			this->firingTimer += 1;
 	}
+
+	// Enemy Spawn Timing
+	if (this->spawnTimer >= this->MAX_SPAWN_TIMER) {
+		if (!this->spawned) {
+			this->spawned = true;
+			this->spawnTimer = 0;
+		}
+	}
+	else {
+		this->spawned = false;
+
+		if (this->spawnTimer < this->MAX_SPAWN_TIMER)
+			this->spawnTimer += 1;
+	}
 }
 
 void Player::fireProjectile()
@@ -149,10 +165,39 @@ void Player::fireProjectile()
 		this->projectile->setSpeed(5);
 
 		this->projectiles.push_back(*this->projectile);
+	}
+}
 
-		// Reduce health
-		/*this->health -= 1;
-		lifes.pop_back();*/
+void Player::initEnemy()
+{
+	this->MAX_SPAWN_TIMER = 100;
+	this->spawnTimer = 0;
+	this->spawned = true;
+}
+
+void Player::spawnEnemy()
+{
+	if (this->spawned) {
+		this->enemy = new Enemy();
+		this->enemySpawnLocation.x = this->rightBound + this->enemy->getXSize();
+		this->enemySpawnLocation.y = rand() % int(this->bottomBound - this->enemy->getYSize()) + 30;
+		this->enemy->setSpawnLocation(this->enemySpawnLocation);
+
+		enemies.push_back(*this->enemy);
+	}
+}
+
+void Player::bulletOnHit()
+{
+	if (this->projectiles.size() > 0 && this->enemies.size() > 0) {
+		for (auto& bullet : projectiles) {
+			for (auto& enemy : enemies) {
+				if (bullet.getProjectile().getGlobalBounds().intersects(enemy.getEnemy().getGlobalBounds())) {
+					// std::cout << "Bullet Hit!" << std::endl;
+
+				}
+			}
+		}
 	}
 }
 
@@ -161,6 +206,8 @@ void Player::update()
 	if (this->health > 0) {
 		playerMovement();
 		fireProjectile();
+		spawnEnemy();
+		bulletOnHit();
 	}
 	else {
 		this->died = true;
@@ -178,6 +225,7 @@ void Player::render(sf::RenderTarget* target)
 		}
 	}
 
+	// Draw Projectiles
 	if (this->projectiles.size() > 0) {
 		for (int i = 0; i < this->projectiles.size(); i++) {
 			this->projectiles[i].update();
@@ -185,6 +233,18 @@ void Player::render(sf::RenderTarget* target)
 
 			if (this->projectiles[i].getLocation().x > this->rightBound) {
 				this->projectiles.erase(projectiles.begin() + i);
+			}
+		}
+	}
+
+	// Draw Enemies
+	if (this->enemies.size() > 0) {
+		for (int i = 0; i < this->enemies.size(); i++) {
+			this->enemies[i].update();
+			target->draw(this->enemies[i].getEnemy());
+
+			if (this->enemies[i].getLocation().x < this->leftBound - this->enemies[i].getXSize()) {
+				this->enemies.erase(enemies.begin() + i);
 			}
 		}
 	}

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "Projectile.h"
+#include "Enemy.h"
 
 class Player
 {
@@ -14,6 +15,7 @@ private:
 	int score;
 	bool died;
 	bool fired;
+	bool bulletOnHit;
 	float firingTimer;
 	float MAX_FIRING_TIMER;
 	float movementSpeed;
@@ -39,8 +41,16 @@ private:
 	// Projectile Variables
 	Projectile* projectile;
 	sf::Vector2f projectileSpawnLocation;
-
 	std::vector<Projectile> projectiles;
+
+	// Enemy Variables
+	Enemy* enemy;
+	sf::Vector2f enemySpawnLocation;
+	std::vector<Enemy> enemies;
+
+	int spawnTimer;
+	int MAX_SPAWN_TIMER;
+	bool spawned;
 
 	// Window bounds
 	float leftBound;
@@ -67,6 +77,11 @@ public:
 
 	void playerMovement();
 	void fireProjectile();
+
+	void initEnemy();
+	void spawnEnemy();
+
+	void bulletOnHit();
 
 	void update();
 	void render(sf::RenderTarget* target);
