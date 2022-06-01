@@ -37,6 +37,10 @@ private:
 	float lifeXSize;
 	float lifeYSize;
 
+	// Fonts
+	sf::Font font;
+	sf::Text scoreText;
+
 	// Projectile Variables
 	Projectile* projectile;
 	sf::Vector2f projectileSpawnLocation;

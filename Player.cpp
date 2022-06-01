@@ -79,6 +79,7 @@ void Player::initPlayer()
 	this->playerXSize = this->playerSprite.getTexture()->getSize().x * this->playerSprite.getScale().x;
 }
 
+// Initialize HUD
 void Player::initHUD(float top, float right, float bottom, float left)
 {
 	this->topBound = top;
@@ -91,6 +92,11 @@ void Player::initHUD(float top, float right, float bottom, float left)
 	else
 		std::cout << "Successfully load life texture!" << std::endl;
 
+	if (!this->font.loadFromFile("assets/fonts/roman.ttf"))
+		std::cout << "Failed to load font!" << std::endl;
+	else
+		std::cout << "Successfully load font!" << std::endl;
+
 	this->lifeSprite.setTexture(this->lifeTexture);
 	this->lifeSprite.setScale(0.1, 0.1);
 	this->lifeYSize = this->lifeSprite.getTexture()->getSize().y * this->lifeSprite.getScale().y;
@@ -99,6 +105,14 @@ void Player::initHUD(float top, float right, float bottom, float left)
 	this->hudBar.setSize(sf::Vector2f(800.f, 30.f));
 	this->hudBar.setPosition(0.f, 0.f);
 	this->hudBar.setFillColor(sf::Color(0, 0, 0, 100));
+
+	this->scoreText.setFont(this->font);
+	this->scoreText.setCharacterSize(18);
+
+	this->scoreText.setString("Score: 0");
+	sf::FloatRect textBound = scoreText.getGlobalBounds();
+
+	this->scoreText.setPosition(this->rightBound - textBound.width - 10, 3.f);
 
 	this->playerSprite.setPosition(0.f, (this->bottomBound / 2 - this->playerYSize));
 
@@ -194,6 +208,14 @@ void Player::bulletOnHit()
 				if (projectiles[i].getProjectile().getGlobalBounds().intersects(enemies[j].getEnemy().getGlobalBounds())) {
 					this->projectiles.erase(projectiles.begin() + i);
 					this->enemies.erase(enemies.begin() + j);
+
+					// Update Score
+					this->score += 1;
+					std::string scoreString = "Score: " + std::to_string(this->score);
+					this->scoreText.setString(scoreString);
+					sf::FloatRect textBound = scoreText.getGlobalBounds();
+
+					this->scoreText.setPosition(this->rightBound - textBound.width - 10, 3.f);
 				}
 			}
 		}
@@ -232,6 +254,7 @@ void Player::render(sf::RenderTarget* target)
 {
 	target->draw(this->playerSprite);
 	target->draw(this->hudBar);
+	target->draw(this->scoreText);
 
 	if (this->lifes.size() > 0) {
 		for (int i = 0; i < this->lifes.size(); i++) {

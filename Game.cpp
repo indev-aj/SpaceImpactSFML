@@ -65,7 +65,6 @@ void Game::update()
 {
 	this->pollEvents();
 	this->player.update();
-	// this->enemy.update();
 
 	if (this->player.getDied()) {
 		this->endGame = true;
