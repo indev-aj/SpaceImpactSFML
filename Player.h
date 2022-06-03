@@ -21,6 +21,9 @@ private:
 	float movementSpeed;
 
 	bool gameWon = false;
+	bool inPlace = false;
+
+	int toSpawnBoss;
 
 	// Player Sprite
 	sf::Texture playerTexture;
@@ -43,6 +46,7 @@ private:
 	// Fonts
 	sf::Font font;
 	sf::Text scoreText;
+	sf::Text endGameText;
 
 	// Projectile Variables
 	Projectile* projectile;
@@ -106,6 +110,8 @@ public:
 
 	void bulletOnHit();
 	void enemyOnHit();
+
+	void endGame();
 
 	void bossUpdate();
 	void update();

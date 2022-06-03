@@ -63,6 +63,7 @@ void Player::initPlayer()
 
 	this->score = 0;
 	this->MAX_FIRING_TIMER = 20.f;
+	this->toSpawnBoss = rand() % 10 + 3;
 	this->died = false;
 	this->fired = false;
 	this->bossSpawned = false;
@@ -254,10 +255,8 @@ void Player::bulletOnHit()
 
 					this->scoreText.setPosition(this->rightBound - textBound.width - 10, 3.f);
 
-					if (this->score >= 1) {
+					if (this->score == this->toSpawnBoss)
 						initBoss();
-						std::cout << "Scored more than 10" << std::endl;
-					}
 				}
 			}
 		}
@@ -272,14 +271,18 @@ void Player::bulletOnHit()
 				this->projectiles.erase(projectiles.begin() + i);
 
 				if (this->boss->getHealth() <= 0) {
+					this->score += 5;
+					std::string scoreString = "Score: " + std::to_string(this->score);
+					this->scoreText.setString(scoreString);
+					sf::FloatRect textBound = scoreText.getGlobalBounds();
+
+					this->scoreText.setPosition(this->rightBound - textBound.width - 10, 3.f);
 					delete this->boss;
 					this->gameWon = true;
 				}
-					//std::cout << "Game won!" << std::endl;
 			}
 		}
 	}
-
 }
 
 void Player::enemyOnHit()
@@ -292,6 +295,54 @@ void Player::enemyOnHit()
 				this->lifes.pop_back();
 				this->enemies.erase(enemies.begin() + i);
 			}
+		}
+	}
+}
+
+void Player::endGame()
+{
+	this->endGameText.setFont(this->font);
+	if (this->gameWon) {
+		this->endGameText.setString("You Won The Game!");
+		this->endGameText.setOrigin(this->endGameText.getLocalBounds().width / 2, this->endGameText.getLocalBounds().height / 2);
+		this->endGameText.setPosition(this->rightBound / 2, this->bottomBound / 2);
+
+		if (this->playerSprite.getPosition().x <= 0 && this->playerSprite.getPosition().y <= (this->bottomBound / 2 - this->playerYSize)) {
+			this->inPlace = true;
+		}
+
+		if (!this->inPlace) {
+			if (this->playerSprite.getPosition().y > (this->bottomBound / 2 - this->playerYSize)) {
+				playerSprite.move(0.f, -2.f);
+			}
+			else if (this->playerSprite.getPosition().y < (this->bottomBound / 2 - this->playerYSize)) {
+				playerSprite.move(0.f, 2.f);
+			}
+
+			if (this->playerSprite.getPosition().x > 0) {
+				playerSprite.move(-2.f, 0.f);
+			}
+		}
+		else if (this->inPlace) {
+			playerSprite.move(5.f, 0.f);
+		}
+
+		if (this->playerSprite.getPosition().x > this->rightBound) {
+			this->endGameText.setString(" You Won The Game!\nPress SPACEBAR To Exit");
+			this->endGameText.setPosition((this->rightBound / 2) - 18, this->bottomBound / 2);
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+				this->died = true;
+			}
+		}
+	}
+	else if (this->health <= 0) {
+		this->endGameText.setString(" You Lose The Game!\nPress SPACEBAR To Exit");
+		this->endGameText.setOrigin(this->endGameText.getLocalBounds().width / 2, this->endGameText.getLocalBounds().height / 2);
+		this->endGameText.setPosition((this->rightBound / 2) + 20, this->bottomBound / 2);
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+			this->died = true;
 		}
 	}
 }
@@ -339,15 +390,20 @@ void Player::update()
 		spawnBoss();
 	}
 	else {
-		this->died = true;
+		this->gameWon = false;
 	}
+
+	endGame();
 }
 
 void Player::render(sf::RenderTarget* target)
 {
-	target->draw(this->playerSprite);
+	if (this->health > 0)
+		target->draw(this->playerSprite);
+	
 	target->draw(this->hudBar);
 	target->draw(this->scoreText);
+	target->draw(this->endGameText);
 
 	if (this->lifes.size() > 0) {
 		for (int i = 0; i < this->lifes.size(); i++) {
