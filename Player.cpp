@@ -3,6 +3,7 @@
 // Constructor
 Player::Player()
 {
+	initSounds();
 	initPlayer();
 	initEnemy();
 }
@@ -191,6 +192,7 @@ void Player::playerMovement()
 void Player::fireProjectile()
 {
 	if (this->fired) {
+		this->fireSound.play();
 		setProjectileSpawnLocation();
 		this->projectile = new Projectile(this->projectileSpawnLocation);
 		this->projectile->setSpeed(5);
@@ -294,9 +296,24 @@ void Player::enemyOnHit()
 				this->health -= 1;
 				this->lifes.pop_back();
 				this->enemies.erase(enemies.begin() + i);
+
+				this->damagedSound.play();
 			}
 		}
 	}
+}
+
+void Player::initSounds()
+{
+	if (!this->fireBuffer.loadFromFile("assets/audio/fire.ogg"))
+		std::cout << "Failed to load fire.ogg!" << std::endl;
+	else
+		this->fireSound.setBuffer(this->fireBuffer);
+
+	if (!this->damagedBuffer.loadFromFile("assets/audio/damaged.ogg"))
+		std::cout << "Failed to load fire.ogg!" << std::endl;
+	else
+		this->damagedSound.setBuffer(this->damagedBuffer);
 }
 
 void Player::endGame()

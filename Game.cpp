@@ -22,6 +22,10 @@ void Game::initWindow()
 
 Game::Game()
 {
+	if (!this->bgm.openFromFile("assets/audio/bgm.ogg"))
+		std::cout << "Failed to load bgm.ogg!" << std::endl;
+	else
+		bgm.play();
 	this->initVariables();
 	this->initWindow();
 	this->player.initHUD(this->topBound, this->rightBound, this->bottomBound, this->leftBound);

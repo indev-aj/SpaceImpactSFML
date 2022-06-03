@@ -13,10 +13,11 @@ using namespace std;
 class Game
 {
 	Player player;
-	//Projectile projectile;
 	Enemy enemy;
 	vector<Enemy> Enemies;
 	vector<Boss> Bosses;
+
+	sf::Music bgm;
 
 	// Variables
 	// Window

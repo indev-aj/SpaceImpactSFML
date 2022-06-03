@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <vector>
 #include "Projectile.h"
@@ -47,6 +48,12 @@ private:
 	sf::Font font;
 	sf::Text scoreText;
 	sf::Text endGameText;
+
+	// Audio
+	sf::SoundBuffer fireBuffer;
+	sf::SoundBuffer damagedBuffer;
+	sf::Sound fireSound;
+	sf::Sound damagedSound;
 
 	// Projectile Variables
 	Projectile* projectile;
@@ -111,6 +118,7 @@ public:
 	void bulletOnHit();
 	void enemyOnHit();
 
+	void initSounds();
 	void endGame();
 
 	void bossUpdate();
