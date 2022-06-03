@@ -395,7 +395,7 @@ void Player::bossUpdate()
 
 void Player::update()
 {
-	if (this->health > 0) {
+	if (!this->gameWon) {
 		playerMovement();
 		fireProjectile();
 
@@ -405,9 +405,6 @@ void Player::update()
 		enemyOnHit();
 
 		spawnBoss();
-	}
-	else {
-		this->gameWon = false;
 	}
 
 	endGame();
