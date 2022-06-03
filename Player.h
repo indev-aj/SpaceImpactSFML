@@ -22,6 +22,7 @@ private:
 	float movementSpeed;
 
 	bool gameWon = false;
+	bool startGame = false;
 	bool inPlace = false;
 
 	int toSpawnBoss;

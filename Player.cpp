@@ -293,9 +293,11 @@ void Player::enemyOnHit()
 		for (int i = 0; i < this->enemies.size(); i++) {
 			if (enemies[i].getEnemy().getGlobalBounds().intersects(this->playerSprite.getGlobalBounds())) {
 				std::cout << enemies[i].getDamage() << " damage taken!" << std::endl;
-				this->health -= 1;
-				this->lifes.pop_back();
 				this->enemies.erase(enemies.begin() + i);
+				if (this->health > 0) {
+					this->health -= 1;
+					this->lifes.pop_back();
+				}
 
 				this->damagedSound.play();
 			}
@@ -358,9 +360,17 @@ void Player::endGame()
 		this->endGameText.setOrigin(this->endGameText.getLocalBounds().width / 2, this->endGameText.getLocalBounds().height / 2);
 		this->endGameText.setPosition((this->rightBound / 2) + 20, this->bottomBound / 2);
 
+		this->playerSprite.setPosition(-100.f, -100.f);
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 			this->died = true;
 		}
+	}
+
+	if (!this->startGame) {
+		this->endGameText.setString("Press SPACEBAR To Start");
+		this->endGameText.setOrigin(this->endGameText.getLocalBounds().width / 2, this->endGameText.getLocalBounds().height / 2);
+		this->endGameText.setPosition(this->rightBound / 2, this->bottomBound / 2);
 	}
 }
 
@@ -395,25 +405,32 @@ void Player::bossUpdate()
 
 void Player::update()
 {
-	if (!this->gameWon) {
-		playerMovement();
-		fireProjectile();
+	
+	if (this->startGame) {
+		if (!this->gameWon) {
+			playerMovement();
+			fireProjectile();
 
-		spawnEnemy();
+			spawnEnemy();
 
-		bulletOnHit();
-		enemyOnHit();
+			bulletOnHit();
+			enemyOnHit();
 
-		spawnBoss();
+			spawnBoss();
+		}
 	}
-
+	else {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+			this->startGame = true;
+			this->endGameText.setString("");
+		}
+	}
 	endGame();
 }
 
 void Player::render(sf::RenderTarget* target)
-{
-	if (this->health > 0)
-		target->draw(this->playerSprite);
+{	
+	target->draw(this->playerSprite);
 	
 	target->draw(this->hudBar);
 	target->draw(this->scoreText);
